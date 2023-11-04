@@ -1,5 +1,12 @@
 import random
 from pathlib import Path
+import enum
+
+
+class hint(enum.Enum):
+    wrong_letters = 0
+    misplaced_letters = 1
+    correct_letters = 2
 
 
 def game_introduction():
@@ -24,6 +31,17 @@ def get_random_word():
     return random.choice(target_words)
 
 
+# TODO - do we need to sort this ? or read the list and match a hint to the work with the most match letter
+def get_hint_word():
+    hint_word_list = Path(__file__).parent / "./word-bank/all_words.txt"
+    hint_words = [
+        hint_word.upper()
+        for hint_word in hint_word_list.read_text(encoding="utf-8").strip().split("\n")
+    ]
+    # print(clue_words)
+    # return clue_words.sort(clue_words)
+
+
 def show_guess(guess, target_word):
     correct_letters = {
         letter for letter, correct in zip(guess, target_word) if letter == correct
@@ -34,6 +52,19 @@ def show_guess(guess, target_word):
     print("Correct  letters:", ", ".join(sorted(correct_letters)))
     print("Misplaced letters:", ", ".join(sorted(misplaced_letters)))
     print("Wrong letters:", ", ".join(sorted(wrong_letters)))
+
+
+# FUNCTION TO IMPLEMENT A SCORING ALGORITHM
+def guess_score(guess, target_word):
+    score = []
+    for target_char, guess_char in zip(target_word, guess):
+        if target_char == guess_char:
+            score.append(hint.correct_letters)  # SCORE OF 2
+        elif guess_char in target_word:
+            score.append(hint.misplaced_letters)  # SCORE OF 1
+        else:
+            score.append(hint.wrong_letters)  # SCORE OF 0
+        print(score)
 
 
 def game_over(target_word):
@@ -48,11 +79,19 @@ def main():
 
     word = get_random_word()
     print(word)
+
     # PROCESS (MAIN LOOP)
     for guess_num in range(1, 7):
         guess = input(f"\nGuess {guess_num}: ").upper()
 
-        show_guess(guess, word)
+        # VALIDATE TO ONLY A-Z CHARS
+        if not (guess.isalpha() and len(guess) == 5):
+            print(
+                "Sorry! try again, you can only use a word with 5 characters only!  A-Z"
+            )
+        else:
+            show_guess(guess, word)
+            guess_score(guess, word)
         if guess == word:
             print("You guess the word correctly!")
             break
