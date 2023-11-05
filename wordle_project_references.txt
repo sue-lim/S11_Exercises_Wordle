@@ -1,0 +1,24 @@
+Read a random line from a file
+https://www.w3resource.com/python-exercises/file/python-io-exercise-15.php
+
+Sets 
+https://realpython.com/python-sets/
+
+Pathlib
+https://realpython.com/python-pathlib/
+https://realpython.com/working-with-files-in-python/#getting-file-attributes
+
+isalpha():
+https://www.shiksha.com/online-courses/articles/isalpha-method-in-python/#:~:text=The%20isalpha()%20function%20in%20Python%20is%20a%20Boolean%20function,to%20the%20isalpha()%20method.
+
+Validation query  
+https://chat.openai.com/share/a18e49bd-f958-4cb7-ae76-7ec559a9a690
+
+Scoring 
+https://mathspp.com/blog/solving-wordle-with-python
+
+Split file into words and words into letters 
+https://www.freecodecamp.org/news/python-string-to-array-how-to-convert-text-to-a-list/#:~:text=Another%20way%20to%20convert%20a,be%20an%20individual%20list%20item.
+
+Hint Function 
+https://chat.openai.com/share/2125c7c0-6bd1-45b8-a33a-1cd5690cc184

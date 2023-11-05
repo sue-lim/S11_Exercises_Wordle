@@ -1,18 +1,19 @@
 import random
-
-# from pathlib import Path
+from pathlib import Path
 import enum
 
 TARGET_WORDS = "./word-bank/target_words.txt"
 VALID_WORDS = "./word-bank/all_words.txt"
 
 
-class hint(enum.Enum):
+# USED FOR THE GUESS_SCORE FUNCTION
+class target_word_score(enum.Enum):
     wrong_letters = 0
     misplaced_letters = 1
     correct_letters = 2
 
 
+# FUNCTION TO CONTAIN THE GAME INTRODUCTION
 def game_introduction():
     user_name = str(
         input(
@@ -23,6 +24,7 @@ def game_introduction():
     print(f"Hey {user_name}... Nice to E-Meet you!\n\n{game_instructions_message}\n")
 
 
+# FUNCTION TO GENERATE A RANDOM WORD AS THE TARGET WORD FOR USER TO GUESS
 def get_target_word():
     target_words_file = open(
         "python_exercises/S11_Exercises_Wordle/word-bank/target_words.txt", "r"
@@ -37,6 +39,7 @@ def get_target_word():
     return random_word
 
 
+# FUNCTION TO SHOW WHAT USER GUESSED LETTERS ARE IN THE CORRECT SPOT, MISPLACED OR NOT CORRECT
 def show_guess(guess, target_word):
     correct_letters = {
         letter for letter, correct in zip(guess, target_word) if letter == correct
@@ -56,32 +59,38 @@ def guess_score(guess, target_word):
     score = []
     for target_char, guess_char in zip(target_word, guess):
         if target_char == guess_char:
-            score.append(hint.correct_letters)  # SCORE OF 2
+            score.append(target_word_score.correct_letters)  # SCORE OF 2
         elif guess_char in target_word:
-            score.append(hint.misplaced_letters)  # SCORE OF 1
+            score.append(target_word_score.misplaced_letters)  # SCORE OF 1
         else:
-            score.append(hint.wrong_letters)  # SCORE OF 0
-        print(score)
+            score.append(target_word_score.wrong_letters)  # SCORE OF 0
+        # print(score)
+    return score
 
 
-def find_matching_words(guess_letters, file_path, target_word):
-    matching_words = []
+# FUNCTION TO RETURN THE BEST MATCHING HINT WORD BASED ON WHAT USER HAS ENTERED
+def find_matching_hint(guess_letters, file_path, target_word):
+    best_match_hint = None
+    best_match_score = 2
 
     with open(file_path, "r") as word_file:
         for word in word_file:
             word = word.strip().upper()  # Read and preprocess each word from the file
-            if word[0] == target_word[0] and all(
-                letter in word for letter in guess_letters
-            ):
-                matching_words.append(word)
+            if word[2] == target_word[2]:
+                match_score = sum(2 for letter in guess_letters if letter in word)
+                if match_score > best_match_score:
+                    best_match_hint = word
+                    best_match_score = match_score
 
-    return matching_words
+    return best_match_hint
 
 
+# FUNCTION FOR THE END OF THE GAME
 def game_over(target_word):
     print(f"The word was {target_word}")
 
 
+# CALL THE GAME INTRODUCTION
 game_introduction()
 
 
@@ -89,7 +98,7 @@ def main():
     # PRE-PROCESS
 
     target_word = get_target_word()
-    print("TARGET_WORD - ", target_word)
+    # print("TARGET_WORD - ", target_word)
 
     # PROCESS (MAIN LOOP)
 
@@ -97,20 +106,19 @@ def main():
 
     for guess_num in range(1, 7):
         guess = input(f"\nGuess {guess_num}: ").upper()
-        matching_words = find_matching_words(guess, file_path, target_word)
+        best_match_hint = find_matching_hint(guess, file_path, target_word)
 
-        # VALIDATE TO ONLY A-Z CHARS & GUESS LENGHT TO BE 5 TIMES ONLY
+        # VALIDATE TO ONLY A-Z CHARS & GUESS LENGTH TO BE 5 TIMES ONLY
         if not (guess.isalpha() and len(guess) == 5):
             print(
                 "Sorry! try again, you can only use a word with 5 characters only!  A-Z"
             )
         else:
             show_guess(guess, target_word)
-            if matching_words:
-                print("Hint:", matching_words)
+            if best_match_hint:
+                print("Hint:", best_match_hint)
             else:
                 print("Sorry there is no hint word for this.")
-            # TODO add if statement for hint or no hint
             guess_score(guess, target_word)
         if guess == target_word:
             print("You guess the word correctly!")
