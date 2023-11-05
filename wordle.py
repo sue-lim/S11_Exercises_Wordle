@@ -1,6 +1,10 @@
 import random
-from pathlib import Path
+
+# from pathlib import Path
 import enum
+
+TARGET_WORDS = "./word-bank/target_words.txt"
+VALID_WORDS = "./word-bank/all_words.txt"
 
 
 class hint(enum.Enum):
@@ -19,27 +23,18 @@ def game_introduction():
     print(f"Hey {user_name}... Nice to E-Meet you!\n\n{game_instructions_message}\n")
 
 
-def get_random_word():
-    target_word_list = Path(__file__).parent / "./word-bank/target_words.txt"
-    target_words = [
-        target_word.upper()
-        for target_word in target_word_list.read_text(encoding="utf-8")
-        .strip()
-        .split("\n")
-    ]
-    # print(target_words)
-    return random.choice(target_words)
+def get_target_word():
+    target_words_file = open(
+        "python_exercises/S11_Exercises_Wordle/word-bank/target_words.txt", "r"
+    )
+    target_words_content = target_words_file.read()
+    target_words_file.close()
 
-
-# TODO - do we need to sort this ? or read the list and match a hint to the work with the most match letter
-def get_hint_word():
-    hint_word_list = Path(__file__).parent / "./word-bank/all_words.txt"
-    hint_words = [
-        hint_word.upper()
-        for hint_word in hint_word_list.read_text(encoding="utf-8").strip().split("\n")
+    target_words_list = [
+        target_word.upper() for target_word in target_words_content.strip().split("\n")
     ]
-    # print(clue_words)
-    # return clue_words.sort(clue_words)
+    random_word = random.choice(target_words_list)
+    return random_word
 
 
 def show_guess(guess, target_word):
@@ -53,8 +48,10 @@ def show_guess(guess, target_word):
     print("Misplaced letters:", ", ".join(sorted(misplaced_letters)))
     print("Wrong letters:", ", ".join(sorted(wrong_letters)))
 
+    return show_guess
 
-# FUNCTION TO IMPLEMENT A SCORING ALGORITHM
+
+# FUNCTION TO IMPLEMENT A SCORING ALGORITHM FOR WORD AND CORRECTLY GUESSED LETTERS
 def guess_score(guess, target_word):
     score = []
     for target_char, guess_char in zip(target_word, guess):
@@ -67,6 +64,20 @@ def guess_score(guess, target_word):
         print(score)
 
 
+def find_matching_words(guess_letters, file_path, target_word):
+    matching_words = []
+
+    with open(file_path, "r") as word_file:
+        for word in word_file:
+            word = word.strip().upper()  # Read and preprocess each word from the file
+            if word[0] == target_word[0] and all(
+                letter in word for letter in guess_letters
+            ):
+                matching_words.append(word)
+
+    return matching_words
+
+
 def game_over(target_word):
     print(f"The word was {target_word}")
 
@@ -77,28 +88,37 @@ game_introduction()
 def main():
     # PRE-PROCESS
 
-    word = get_random_word()
-    print(word)
+    target_word = get_target_word()
+    print("TARGET_WORD - ", target_word)
 
     # PROCESS (MAIN LOOP)
+
+    file_path = "python_exercises/S11_Exercises_Wordle/word-bank/all_words.txt"
+
     for guess_num in range(1, 7):
         guess = input(f"\nGuess {guess_num}: ").upper()
+        matching_words = find_matching_words(guess, file_path, target_word)
 
-        # VALIDATE TO ONLY A-Z CHARS
+        # VALIDATE TO ONLY A-Z CHARS & GUESS LENGHT TO BE 5 TIMES ONLY
         if not (guess.isalpha() and len(guess) == 5):
             print(
                 "Sorry! try again, you can only use a word with 5 characters only!  A-Z"
             )
         else:
-            show_guess(guess, word)
-            guess_score(guess, word)
-        if guess == word:
+            show_guess(guess, target_word)
+            if matching_words:
+                print("Hint:", matching_words)
+            else:
+                print("Sorry there is no hint word for this.")
+            # TODO add if statement for hint or no hint
+            guess_score(guess, target_word)
+        if guess == target_word:
             print("You guess the word correctly!")
             break
 
     # POST-PROCESS (is the word needed to clean up the main loop)
     else:
-        game_over(word)
+        game_over(target_word)
 
 
 # THIS LINE MAKES SURE YOUR CODE IS CALLED WHEN THE FILE IS EXECUTED
