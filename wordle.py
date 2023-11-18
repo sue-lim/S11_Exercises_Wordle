@@ -2,23 +2,22 @@
 Author: P Lim
 Company: WordGamesRUs
 Copyright: 2023
-
 """
 
 import random
 
 # from pathlib import Path
-import enum
+# import enum
 
 TARGET_WORDS = "./word-bank/target_words.txt"
 VALID_WORDS = "./word-bank/all_words.txt"
 
 
 # USED FOR THE GUESS_SCORE FUNCTION
-class target_word_score(enum.Enum):
-    wrong_letters = 0
-    misplaced_letters = 1
-    correct_letters = 2
+# class target_word_score(enum.Enum):
+#     wrong_letters = 0
+#     misplaced_letters = 1
+#     correct_letters = 2
 
 
 def greet():
@@ -92,12 +91,11 @@ def show_guess(guess, target_word):
     """Set Function to return how many correct letters, misplaced letters, wrong letters
     have been guessed.
 
-    Args:
-    Returns:
-    # >>> print("Correct  letters:", ", ".join(sorted(correct_letters)))
-    # >>> print("Misplaced letters:", ", ".join(sorted(misplaced_letters)))
-    # >>> print("Wrong letters:", ", ".join(sorted(wrong_letters)))
-
+    Example:
+    >>> show_guess("SQUID","SQUIB")
+    Correct letters: I, Q, S, U
+    Misplaced letters:
+    Wrong letters: D
     """
     correct_letters = {
         letter for letter, correct in zip(guess, target_word) if letter == correct
@@ -105,7 +103,7 @@ def show_guess(guess, target_word):
     misplaced_letters = set(guess) & set(target_word) - correct_letters
     wrong_letters = set(guess) - set(target_word)
 
-    print("Correct  letters:", ", ".join(sorted(correct_letters)))
+    print("Correct letters:", ", ".join(sorted(correct_letters)))
     print("Misplaced letters:", ", ".join(sorted(misplaced_letters)))
     print("Wrong letters:", ", ".join(sorted(wrong_letters)))
 
@@ -118,34 +116,35 @@ def guess_score(guess, target_word):
     against the target word (MISS, MISPLACED, or EXACT)
 
     Example (will run as doctest):
-    >>> score_guess('hello', 'hello')
-    (2, 2, 2, 2, 2)
-    >>> score_guess('drain', 'float')
-    (0, 0, 1, 0, 0)
-    >>> score_guess('hello', 'spams')
-    (0, 0, 0, 0, 0)
+    >>> guess_score('hello', 'hello')
+    [2, 2, 2, 2, 2]
+    >>> guess_score('drain', 'float')
+    [0, 0, 1, 0, 0]
+    >>> guess_score('hello', 'spams'), [0, 0, 0, 0, 0]
     """
+    correct_letters = 2
+    misplaced_letters = 1
+    wrong_letters = 0
     score = []
+
     for target_char, guess_char in zip(target_word, guess):
         if target_char == guess_char:
-            score.append(target_word_score.correct_letters)  # SCORE OF 2
+            score.append(correct_letters)  # SCORE OF 2
         elif guess_char in target_word:
-            score.append(target_word_score.misplaced_letters)  # SCORE OF 1
+            score.append(misplaced_letters)  # SCORE OF 1
         else:
-            score.append(target_word_score.wrong_letters)  # SCORE OF 0
-        print(score)
+            score.append(wrong_letters)  # SCORE OF 0
+    print(score)
     return score
 
 
 # FUNCTION TO RETURN THE BEST MATCHING HINT WORD BASED ON WHAT USER HAS ENTERED
 def find_matching_hint(guess_letters, file_path, target_word):
     """Function to read through a file and return the best hint
-
     Args:
-            file_path (str): the path to the file containing the words
-
-        Returns:
-            str or None: a hint word from the file
+        file_path (str): the path to the file containing the words
+    Returns:
+        str or None: a hint word from the file
 
     Examples:
     # >>> import string
@@ -180,6 +179,7 @@ def game_over(target_word):
 
     """
     print(f"The word was {target_word}")
+    return game_over
 
 
 # CALL THE GAME INTRODUCTION
