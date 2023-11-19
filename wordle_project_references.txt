@@ -25,3 +25,6 @@ https://chat.openai.com/share/2125c7c0-6bd1-45b8-a33a-1cd5690cc184
 
 Unittesting 
 https://docs.python.org/3/library/unittest.html#module-unittest
+
+Python | Ways to print list without quotes
+https://www.geeksforgeeks.org/python-ways-to-print-list-without-quotes/

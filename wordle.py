@@ -5,6 +5,19 @@ Copyright: 2023
 """
 
 import random
+from rich import print
+from rich.console import Console
+from rich.theme import Theme
+
+
+console = Console(width=60, theme=Theme({"warning": " bold red on yellow"}))
+console.rule(f"[bold blue]:leafy_green: Wordle :leafy_green:\n")
+
+
+# def refresh_page(headline):
+#     console.clear()
+# console.rule(f"[bold blue]:leafy_green: {headline}: leafy_green:")
+
 
 # from pathlib import Path
 # import enum
@@ -97,16 +110,27 @@ def show_guess(guess, target_word):
     Misplaced letters:
     Wrong letters: D
     """
+    guessed_letters = []
+
     correct_letters = {
         letter for letter, correct in zip(guess, target_word) if letter == correct
     }
     misplaced_letters = set(guess) & set(target_word) - correct_letters
     wrong_letters = set(guess) - set(target_word)
+    # this is required as it's part of the set
+    # removing this will affect the "else" statement below
 
-    print("Correct letters:", ", ".join(sorted(correct_letters)))
-    print("Misplaced letters:", ", ".join(sorted(misplaced_letters)))
-    print("Wrong letters:", ", ".join(sorted(wrong_letters)))
+    for letter, correct in zip(guess, target_word):
+        if letter == correct:
+            guessed_letters.append(
+                f"[b white on dark_green]{letter}[/b white on dark_green]"
+            )
+        elif letter in misplaced_letters:
+            guessed_letters.append(f"[white on yellow]{letter}[/white on yellow]")
+        else:
+            guessed_letters.append(f"[white on gray23]{letter}[/white on gray23]")
 
+    print(*guessed_letters, sep=" ")
     return show_guess
 
 
@@ -203,8 +227,10 @@ def main():
 
         # VALIDATE TO ONLY A-Z CHARS & GUESS LENGTH TO BE 5 TIMES ONLY
         if not (guess.isalpha() and len(guess) == 5):
-            print(
-                "Sorry! try again, you can only use a word with 5 characters only!  A-Z"
+            print("\n")
+            console.print(
+                "Sorry! try again... Please use a word with 5 characters only!  A-Z",
+                style="warning",
             )
         else:
             show_guess(guess, target_word)
