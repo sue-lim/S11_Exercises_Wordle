@@ -10,9 +10,8 @@ from rich.console import Console
 from rich.theme import Theme
 
 
-console = Console(width=60, theme=Theme({"warning": " bold red on yellow"}))
-console.rule(f"[bold blue]:leafy_green: Wordle :leafy_green:\n")
-
+console = Console(width=100, theme=Theme({"warning": " bold white on red"}))
+console.rule(f"[bold white]:memo: Wordle :memo:\n")
 
 # def refresh_page(headline):
 #     console.clear()
@@ -43,10 +42,10 @@ def greet():
     """
     player_name = str(
         input(
-            "Welcome to Wordle\nLet's get to know each other a little more before we get started!\nWhat's your name? "
+            "\nWelcome to Wordle\nLet's get to know each other a little more before we get started!\nWhat's your name? "
         )
     )
-    print(f"Hey {player_name}... Nice to E-Meet you!\n")
+    print(f"\n:waving_hand: Hey {player_name}... Nice to E-Meet you!\n")
 
 
 # FUNCTION TO CONTAIN THE GAME INTRODUCTION
@@ -58,13 +57,15 @@ def game_introduction():
 
     Example:
     >>> print(game_introduction())
-        "Wordle is a single-player game\n\nA player has to guess a five-letter hidden word\nYou have 6 attempts\nYour Progress Guide\nIndicates that the letter at that position is in the hidden word but in a different position (TO BE UPDATED)\nIndicates that the letter at that position is in the hidden word...(TO BE UPDATED)\n"
+        "Wordle is a single-player game\n\nA player has to guess a five-letter hidden word...\nYou have 6 attempts\nYour Progress Guide\n\nIndicates that the letter at that position is in the hidden word but in a different position (TO BE UPDATED)\nIndicates that the letter at that position is in the hidden word...(TO BE UPDATED)\n"
     True
     """
-
-    print(
-        "Wordle is a single-player game\n\nA player has to guess a five-letter hidden word\nYou have 6 attempts\nYour Progress Guide\nIndicates that the letter at that position is in the hidden word but in a different position (TO BE UPDATED)\nIndicates that the letter at that position is in the hidden word...(TO BE UPDATED)\n"
+    console.print(f"[bold_underlined]:white_exclamation_mark: Instructions\n")
+    console.print(
+        f":white_exclamation_mark: Wordle is a single-player game\n\n:white_exclamation_mark: A player has to guess a five-letter hidden word...\n:white_exclamation_mark: You have 6 attempts\n\n:white_exclamation_mark: Your Progress Guide\n\n:white_exclamation_mark: :green_square:  Indicates that the letter at that position is in the hidden word\n:white_exclamation_mark: :yellow_square:  Indicates that the letter at that position is in the hidden word but in a different position\n:white_exclamation_mark: :red_square:  Indicates the letter is not in the word...\n\n:four_leaf_clover:  Goodluck  :four_leaf_clover:\n "
     )
+
+    console.print(f"Let's play...\n")
 
 
 # FUNCTION TO GENERATE A RANDOM WORD AS THE TARGET WORD FOR USER TO GUESS
@@ -122,13 +123,11 @@ def show_guess(guess, target_word):
 
     for letter, correct in zip(guess, target_word):
         if letter == correct:
-            guessed_letters.append(
-                f"[b white on dark_green]{letter}[/b white on dark_green]"
-            )
+            guessed_letters.append(f"[b white on green]{letter:^3}[/b white on green]")
         elif letter in misplaced_letters:
-            guessed_letters.append(f"[white on yellow]{letter}[/white on yellow]")
+            guessed_letters.append(f"[white on yellow]{letter:^3}[/white on yellow]")
         else:
-            guessed_letters.append(f"[white on gray23]{letter}[/white on gray23]")
+            guessed_letters.append(f"[white on red]{letter:^3}[/white on red]")
 
     print(*guessed_letters, sep=" ")
     return show_guess
@@ -137,34 +136,35 @@ def show_guess(guess, target_word):
 # FUNCTION TO IMPLEMENT A SCORING ALGORITHM FOR WORD AND CORRECTLY GUESSED LETTERS
 def guess_score(guess, target_word):
     """given two strings of equal length, returns a tuple of ints representing the score of the guess
-    against the target word (MISS, MISPLACED, or EXACT)
+    against the target word (MISS, MISPLACED, or EXACT)"""
 
-    Example (will run as doctest):
-    >>> guess_score('hello', 'hello')
-    [2, 2, 2, 2, 2]
-    >>> guess_score('drain', 'float')
-    [0, 0, 1, 0, 0]
-    >>> guess_score('hello', 'spams'), [0, 0, 0, 0, 0]
-    """
     correct_letters = 2
     misplaced_letters = 1
     wrong_letters = 0
-    score = []
+
+    numeric_score = []
+    formatted_score = []
 
     for target_char, guess_char in zip(target_word, guess):
         if target_char == guess_char:
-            score.append(correct_letters)  # SCORE OF 2
+            numeric_score.append(correct_letters)  # SCORE OF 2
+            formatted_score.append("🟩")  # SCORE OF 2
         elif guess_char in target_word:
-            score.append(misplaced_letters)  # SCORE OF 1
+            numeric_score.append(misplaced_letters)  # SCORE OF 1
+            formatted_score.append("🟨")  # SCORE OF 1
         else:
-            score.append(wrong_letters)  # SCORE OF 0
-    print(score)
-    return score
+            numeric_score.append(wrong_letters)  # SCORE OF 0
+            formatted_score.append("🟥")  # SCORE OF 0
+
+    """ Test print to screen """
+    # print(numeric_score)
+    # print(*formatted_score, sep="")
+    return numeric_score
 
 
 # FUNCTION TO RETURN THE BEST MATCHING HINT WORD BASED ON WHAT USER HAS ENTERED
-def find_matching_hint(guess_letters, file_path, target_word):
-    """Function to read through a file and return the best hint
+def find_matching_hint(guess_letters, VALID_WORDS, target_word):
+    """Function to read through a file_path and return the best hint
     Args:
         file_path (str): the path to the file containing the words
     Returns:
@@ -180,7 +180,7 @@ def find_matching_hint(guess_letters, file_path, target_word):
     best_match_hint = None
     best_match_score = 2
 
-    with open(file_path, "r") as word_file:
+    with open(VALID_WORDS, "r") as word_file:
         for word in word_file:
             word = word.strip().upper()  # Read and preprocess each word from the file
             if word[2] == target_word[2]:
@@ -219,33 +219,43 @@ def main():
 
     # PROCESS (MAIN LOOP)
 
-    file_path = VALID_WORDS
+    while True:
+        for guess_num in range(1, 7):
+            guess = input(f"\nGuess {guess_num}: ").upper()
+            best_match_hint = find_matching_hint(guess, VALID_WORDS, target_word)
 
-    for guess_num in range(1, 7):
-        guess = input(f"\nGuess {guess_num}: ").upper()
-        best_match_hint = find_matching_hint(guess, file_path, target_word)
+            # VALIDATE TO ONLY A-Z CHARS & GUESS LENGTH TO BE 5 TIMES ONLY
+            if not len(guess) == 5 and guess.isalpha():
+                print("\n")
+                console.print(
+                    ":x:  Sorry! try again... Please use a word with 5 characters only!  A-Z ",
+                    style="warning",
+                )
 
-        # VALIDATE TO ONLY A-Z CHARS & GUESS LENGTH TO BE 5 TIMES ONLY
-        if not (guess.isalpha() and len(guess) == 5):
-            print("\n")
-            console.print(
-                "Sorry! try again... Please use a word with 5 characters only!  A-Z",
-                style="warning",
-            )
-        else:
-            show_guess(guess, target_word)
-            if best_match_hint:
-                print("Hint:", best_match_hint)
+                continue
+
             else:
-                print("Sorry there is no hint word for this.")
-            guess_score(guess, target_word)
-        if guess == target_word:
-            print("You guess the word correctly!")
-            break
+                show_guess(guess, target_word)
+                if best_match_hint:
+                    console.print("\n:gift:   Hint:", best_match_hint)
+                else:
+                    console.print(":x:  Sorry there is no hint word for this.")
+                guess_score(guess, target_word)
+            if guess == target_word:
+                console.print(f"\n:tada:Yipee!\n\nYou guess the word correctly!\n")
+                break
 
-    # POST-PROCESS (is the word needed to clean up the main loop)
-    else:
-        game_over(target_word)
+        # POST-PROCESS (is the word needed to clean up the main loop)
+        else:
+            game_over(target_word)
+        # ask the player if they want to play again
+        answer = input("\nDo you want to play again? Y/N ")
+        # if answer == #todo add some words to play again in a def
+        if answer == "N":
+            print(
+                "\nThanks for playing, hope to see you again for another challenge!\n"
+            )
+            break
 
 
 # THIS LINE MAKES SURE YOUR CODE IS CALLED WHEN THE FILE IS EXECUTED

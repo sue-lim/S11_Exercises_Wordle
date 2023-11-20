@@ -28,3 +28,10 @@ https://docs.python.org/3/library/unittest.html#module-unittest
 
 Python | Ways to print list without quotes
 https://www.geeksforgeeks.org/python-ways-to-print-list-without-quotes/
+
+Import Rich for Rich text | Styling 
+https://rich.readthedocs.io/en/stable/index.html
+https://chat.openai.com/share/df7b90e1-095c-4405-ba4d-c4f041ae2838
+
+Play again
+https://discuss.python.org/t/repeat-while-loop/11572/3
