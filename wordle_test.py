@@ -1,5 +1,5 @@
 import unittest
-from wordle import get_target_word, show_guesses, find_matching_hint, guess_score
+from wordle import get_target_word, show_guess, find_matching_hint, guess_score
 
 # GLOBAL VARIABLES
 TARGET_WORDS = "./word-bank/target_words.txt"
@@ -29,8 +29,8 @@ class TestGetTargetWordFile(unittest.TestCase):
 
 class TestShowGuesses(unittest.TestCase):
     def test_show_guesses(self):
-        self.assertTrue(show_guesses("loved", "doves"))
-        self.assertTrue(show_guesses("jewel", "hello"))
+        self.assertTrue(show_guess("loved", "doves"))
+        self.assertTrue(show_guess("jewel", "hello"))
 
 
 class TestGuessScore(unittest.TestCase):

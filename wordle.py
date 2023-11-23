@@ -178,7 +178,7 @@ def find_matching_hint(guess_letters, VALID_WORDS, target_word):
     #"""
 
     best_match_hint = None
-    best_match_score = 2
+    best_match_score = 1
 
     with open(VALID_WORDS, "r") as word_file:
         for word in word_file:
@@ -207,11 +207,11 @@ def game_over(target_word):
 
 
 # CALL THE GAME INTRODUCTION
-greet()
-game_introduction()
 
 
 def main():
+    greet()
+    game_introduction()
     # PRE-PROCESS
 
     target_word = get_target_word(TARGET_WORDS)
@@ -220,21 +220,18 @@ def main():
     # PROCESS (MAIN LOOP)
 
     while True:
-        for guess_num in range(1, 7):
-            guess = input(f"\nGuess {guess_num}: ").upper()
+        guess_num = 1
+
+        while guess_num < 6:
+            guess = input(f"\n➡️ Guess {guess_num}: ").upper()
             best_match_hint = find_matching_hint(guess, VALID_WORDS, target_word)
-
-            # VALIDATE TO ONLY A-Z CHARS & GUESS LENGTH TO BE 5 TIMES ONLY
             if not len(guess) == 5 and guess.isalpha():
-                print("\n")
-                console.print(
-                    ":x:  Sorry! try again... Please use a word with 5 characters only!  A-Z ",
-                    style="warning",
+                print(
+                    "Sorry! try again... Please use a word with 5 characters only!  A-Z "
                 )
-
                 continue
-
             else:
+                guess_num += 1
                 show_guess(guess, target_word)
                 if best_match_hint:
                     console.print("\n:gift:   Hint:", best_match_hint)
@@ -242,16 +239,15 @@ def main():
                     console.print(":x:  Sorry there is no hint word for this.")
                 guess_score(guess, target_word)
             if guess == target_word:
-                console.print(f"\n:tada:Yipee!\n\nYou guess the word correctly!\n")
+                console.print(f"\n:tada:Yipee! \n\nYou guess the word correctly!\n")
                 break
 
-        # POST-PROCESS (is the word needed to clean up the main loop)
+            # POST-PROCESS (is the word needed to clean up the main loop)
         else:
             game_over(target_word)
-        # ask the player if they want to play again
+            # ask the player if they want to play again
         answer = input("\nDo you want to play again? Y/N ")
-        # if answer == #todo add some words to play again in a def
-        if answer == "N":
+        if answer.lower() not in ("y", "yes"):
             print(
                 "\nThanks for playing, hope to see you again for another challenge!\n"
             )
