@@ -23,6 +23,7 @@ console.rule(f"[bold white]:memo: Wordle :memo:\n")
 
 TARGET_WORDS = "./word-bank/target_words.txt"
 VALID_WORDS = "./word-bank/all_words.txt"
+CONGRATULATORY_MSGS = "wordle_congrats_messages.txt"
 
 
 # USED FOR THE GUESS_SCORE FUNCTION
@@ -193,6 +194,15 @@ def find_matching_hint(guess_letters, VALID_WORDS, target_word):
     return best_match_hint
 
 
+def get_random_congratulatory_message(CONGRATULATORY_MSG):
+    """Returns a random congratulatory message for Wordle from a file."""
+
+    with open(CONGRATULATORY_MSGS, "r") as congrats_msg_file:
+        congrats_msg_content = congrats_msg_file.readlines()
+        congrats_messages = [msg.strip() for msg in congrats_msg_content if msg.strip()]
+        return random.choice(congrats_messages)
+
+
 # FUNCTION FOR THE END OF THE GAME
 def game_over(target_word):
     """Function to call the target word at the end of the game
@@ -206,24 +216,27 @@ def game_over(target_word):
     return game_over
 
 
-# CALL THE GAME INTRODUCTION
-
-
+# MAIN GAME
 def main():
     greet()
     game_introduction()
     # PRE-PROCESS
-
-    target_word = get_target_word(TARGET_WORDS)
-    print("TARGET_WORD - ", target_word)
-
+    # total_games_played = 0
     # PROCESS (MAIN LOOP)
 
+    total_games_played = 0
+    total_guesses = 0
+    # total_games_played = get_total_games_played()
     while True:
+        target_word = get_target_word(TARGET_WORDS)
+        congratulation_msg = get_random_congratulatory_message(CONGRATULATORY_MSGS)
+        # print("TARGET_WORD - ", target_word)
+
         guess_num = 1
+        guess_counter = 0
 
         while guess_num < 6:
-            guess = input(f"\n➡️ Guess {guess_num}: ").upper()
+            guess = console.input(f"\n:lock: Guess {guess_num}: ").upper()
             best_match_hint = find_matching_hint(guess, VALID_WORDS, target_word)
             if not len(guess) == 5 and guess.isalpha():
                 print(
@@ -232,22 +245,42 @@ def main():
                 continue
             else:
                 guess_num += 1
+                guess_counter += 1
                 show_guess(guess, target_word)
                 if best_match_hint:
-                    console.print("\n:gift:   Hint:", best_match_hint)
+                    console.print("\n:gift:  Hint:", best_match_hint)
                 else:
                     console.print(":x:  Sorry there is no hint word for this.")
                 guess_score(guess, target_word)
             if guess == target_word:
-                console.print(f"\n:tada:Yipee! \n\nYou guess the word correctly!\n")
+                # print(f"*** ATTEMPTS - {guess_counter} ")
+                console.print(f"\n:mailbox: {congratulation_msg}")
+                console.print(f"\n:tada: Yipee! You guess the word correctly!\n")
                 break
 
             # POST-PROCESS (is the word needed to clean up the main loop)
         else:
             game_over(target_word)
-            # ask the player if they want to play again
+
+        with open("wordle_statistics.csv", "a") as guess_statistics_file:
+            guess_statistics_file.write(f"{target_word}:{guess_counter}\n")
+
+            total_guesses += (
+                guess_counter  # Add the guesses made in this game to the total guesses
+            )
+            total_games_played += 1
+
+        print(f"Games played: {total_games_played}")
+        # print(total_guesses)
+
         answer = input("\nDo you want to play again? Y/N ")
         if answer.lower() not in ("y", "yes"):
+            if total_games_played > 0:
+                average_guesses = total_guesses / total_games_played
+                console.print(
+                    f"\n:video_game: Your Game Statistics\n\n:video_game: Average guesses attempts per game: {average_guesses}"
+                )
+
             print(
                 "\nThanks for playing, hope to see you again for another challenge!\n"
             )
@@ -257,5 +290,3 @@ def main():
 # THIS LINE MAKES SURE YOUR CODE IS CALLED WHEN THE FILE IS EXECUTED
 if __name__ == "__main__":
     main()
-
-# TODO - PLAY AGAIN
