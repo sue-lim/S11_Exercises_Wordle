@@ -146,7 +146,7 @@ def guess_score(guess, target_word):
     numeric_score = []
     formatted_score = []
 
-    for target_char, guess_char in zip(target_word, guess):
+    for target_char, guess_char in zip(target_word, guess.upper()):
         if target_char == guess_char:
             numeric_score.append(correct_letters)  # SCORE OF 2
             formatted_score.append("🟩")  # SCORE OF 2
@@ -221,7 +221,7 @@ def main():
     greet()
     game_introduction()
     # PRE-PROCESS
-    # total_games_played = 0
+    total_games_played = 0
     # PROCESS (MAIN LOOP)
 
     total_games_played = 0
@@ -230,7 +230,7 @@ def main():
     while True:
         target_word = get_target_word(TARGET_WORDS)
         congratulation_msg = get_random_congratulatory_message(CONGRATULATORY_MSGS)
-        # print("TARGET_WORD - ", target_word)
+        print("TARGET_WORD - ", target_word)
 
         guess_num = 1
         guess_counter = 0

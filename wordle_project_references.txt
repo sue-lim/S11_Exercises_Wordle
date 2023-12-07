@@ -25,6 +25,7 @@ https://chat.openai.com/share/2125c7c0-6bd1-45b8-a33a-1cd5690cc184
 
 Unittesting 
 https://docs.python.org/3/library/unittest.html#module-unittest
+https://docs.telerik.com/devtools/justmock/basic-usage/arrange-act-assert
 
 Python | Ways to print list without quotes
 https://www.geeksforgeeks.org/python-ways-to-print-list-without-quotes/
@@ -38,3 +39,7 @@ https://discuss.python.org/t/repeat-while-loop/11572/3
 
 Congratulatory messsages 
 https://chat.openai.com/share/2fd6b203-9eeb-4437-ad98-7aee4c5dc3d6
+
+Wordle Examples
+https://levelup.gitconnected.com/wordle-in-python-a3bbc9df5fbf
+https://www.freecodecamp.org/news/how-to-build-a-wordle-clone-using-python-and-rich/

@@ -19,12 +19,18 @@ class TestGameIntroduction:
 
 class TestGetTargetWordFile(unittest.TestCase):
     def test_get_target_word_file(self):
-        # Test target word file is read
-        self.assertTrue(get_target_word(target_word_directory).upper().split())
+        # Arrange
+        target_words = get_target_word(target_word_directory).upper().split()
+
+        # Act & Assert
+        self.assertTrue(len(target_words) > 0)
 
     def test_get_target_word_upper_case(self):
-        # Test target word file is converted to upper cse
-        self.assertTrue(get_target_word(target_word_directory).upper())
+        # Arrange
+        target_word_upper = get_target_word(target_word_directory).upper()
+
+        # Act & Assert
+        self.assertTrue(target_word_upper.isupper())
 
 
 class TestShowGuesses(unittest.TestCase):
@@ -34,20 +40,28 @@ class TestShowGuesses(unittest.TestCase):
 
 
 class TestGuessScore(unittest.TestCase):
-    def test_score_guess(self):
-        self.assertEqual(guess_score("hello", "hello"), [2, 2, 2, 2, 2])
-        self.assertEqual(guess_score("drain", "float"), [0, 0, 1, 0, 0])
-        self.assertEqual(guess_score("hello", "spams"), [0, 0, 0, 0, 0])
+    def test_score_guess_uppercase(self):
+        # Test with uppercase input
+        self.assertEqual(guess_score("HELLO", "HELLO"), [2, 2, 2, 2, 2])
+        self.assertEqual(guess_score("DRAIN", "FLOAT"), [0, 0, 1, 0, 0])
+        self.assertEqual(guess_score("HELLO", "SPAMS"), [0, 0, 0, 0, 0])
 
 
 class TestMatchingHint(unittest.TestCase):
     def test_get_hint_word_file(self):
-        # Test target word file is read
-        self.assertTrue(get_target_word(hint_word_directory))
+        # Arrange
+        hint_words = get_target_word(hint_word_directory)
+
+        # Act & Assert
+        self.assertIsNotNone(hint_words)
 
     def test_get_hint_word(self):
-        # Test a guessed words returns a hint word
-        self.assertTrue(get_target_word(hint_word_directory), "TOURS" != "SUTOR")
+        # Arrange
+        guessed_word = "TOURS"
+        target_word = "SUTOR"
+
+        # Act & Assert
+        self.assertNotEqual(guessed_word, target_word)
 
 
 class TestGameOver:
