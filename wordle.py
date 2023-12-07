@@ -230,7 +230,7 @@ def main():
     while True:
         target_word = get_target_word(TARGET_WORDS)
         congratulation_msg = get_random_congratulatory_message(CONGRATULATORY_MSGS)
-        print("TARGET_WORD - ", target_word)
+        # print("TARGET_WORD - ", target_word)
 
         guess_num = 1
         guess_counter = 0
