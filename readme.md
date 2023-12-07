@@ -1,4 +1,5 @@
-Wordle Clone Games 
+## Wordle Clone Games 
+![image](https://github.com/sue-lim/tafe-py-wordle-assignment/assets/113986306/9842f4ef-cafc-4051-beec-d9779c3738ed)
 
 Imports Used 
 Install of Rich required
