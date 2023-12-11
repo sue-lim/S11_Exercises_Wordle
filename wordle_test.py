@@ -45,6 +45,7 @@ class TestGuessScore(unittest.TestCase):
         self.assertEqual(guess_score("HELLO", "HELLO"), [2, 2, 2, 2, 2])
         self.assertEqual(guess_score("DRAIN", "FLOAT"), [0, 0, 1, 0, 0])
         self.assertEqual(guess_score("HELLO", "SPAMS"), [0, 0, 0, 0, 0])
+        self.assertEqual(guess_score("HELLO", "WORLD"), [0, 0, 1, 2, 1])
 
 
 class TestMatchingHint(unittest.TestCase):

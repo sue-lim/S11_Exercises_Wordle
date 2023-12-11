@@ -3,7 +3,6 @@ Author: P Lim
 Company: WordGamesRUs
 Copyright: 2023
 """
-
 import random
 from rich import print
 from rich.console import Console
@@ -69,35 +68,38 @@ def game_introduction():
     console.print(f"Let's play...\n")
 
 
-# FUNCTION TO GENERATE A RANDOM WORD AS THE TARGET WORD FOR USER TO GUESS
-def get_target_word(TARGET_WORDS):
-    """Pick a random word from a file of words
-
-        Args:
-            file_path (str): the path to the file containing the words
-
-        Returns:
-            str or None: a random word from the file
+def get_target_word(file_path):
+    """Reads through a file and picks a random word from TARGET_WORDS
+    Args:
+        file_path (str): the path to the file containing the words
+    Returns:
+        str or None: a random word from the file
 
     Examples:
-    >>> import string
-    >>> random_word = get_target_word("./word-bank/target_words.txt")
-    >>> all(char.isalpha() for char in random_word)
-    True
+    >>> file_path = "./word-bank/target_words.txt"
+    >>> target_word = get_target_word(file_path)
+    >>> assert target_word is not None, "File reading failed"
+    >>> print("File has been successfully read.")
     """
 
-    target_words_file = open(TARGET_WORDS, "r")
-    target_words_content = target_words_file.read()
-    target_words_file.close()
+    try:
+        target_words_file = open(file_path, "r")
+        target_words_content = target_words_file.readlines()
+        target_words_file.close()
+        target_words_list = []
 
-    target_words_list = [
-        target_word.upper() for target_word in target_words_content.strip().split("\n")
-    ]
-    random_word = str(random.choice(target_words_list))
+        for target_word in target_words_content:
+            updated_target_word = target_word.strip()
+            if updated_target_word:
+                uppercase_target_word = updated_target_word.upper()
+                target_words_list.append(uppercase_target_word)
 
-    """ test that the word is printed to screen """
-    # print(random_word)
-    return random_word
+        random_word = random.choice(target_words_list)
+        return random_word
+
+    except FileNotFoundError:
+        print(f"File '{file_path}' not found.")
+        return None
 
 
 # FUNCTION TO SHOW WHAT USER GUESSED LETTERS ARE IN THE CORRECT SPOT,
@@ -136,8 +138,21 @@ def show_guess(guess, target_word):
 
 # FUNCTION TO IMPLEMENT A SCORING ALGORITHM FOR WORD AND CORRECTLY GUESSED LETTERS
 def guess_score(guess, target_word):
-    """given two strings of equal length, returns a tuple of ints representing the score of the guess
-    against the target word (MISS, MISPLACED, or EXACT)"""
+    """
+    Given two strings of equal length, returns a list of integers representing the score of the guess
+    against the target word (MISS, MISPLACED, or EXACT).
+
+    Args:
+    - guess (str): The user's guess.
+    - target_word (str): The target word to be guessed against.
+
+    Returns:
+    - list: A list of integers representing the score for each character in the guess.
+
+    Example:
+    >>> guess_score("HELLO", "WORLD")
+    [0, 0, 1, 2, 1]
+    """
 
     correct_letters = 2
     misplaced_letters = 1
@@ -164,43 +179,80 @@ def guess_score(guess, target_word):
 
 
 # FUNCTION TO RETURN THE BEST MATCHING HINT WORD BASED ON WHAT USER HAS ENTERED
-def find_matching_hint(guess_letters, VALID_WORDS, target_word):
+def find_matching_hint(guess_letters, file_path, target_word):
     """Function to read through a file_path and return the best hint
     Args:
-        file_path (str): the path to the file containing the words
+        guess_letters (str): Letters used for guessing.
+        file_path (str): The path to the file containing the words.
+        target_word (str): The target word to match against.
+
     Returns:
-        str or None: a hint word from the file
+        str or None: A hint word from the file.
 
     Examples:
-    # >>> import string
-    # >>> best_match_hint = find_matching_hint("./word-bank/all_words.txt")
-    # >>> all(char.isalpha() for char in best_match_hint)
-    # True
-    #"""
 
-    best_match_hint = None
-    best_match_score = 1
+    """
+    try:
+        hint_word_file = open(file_path, "r")
+        hint_word_file_content = hint_word_file.readlines()
+        best_match_hint = None
+        best_match_score = 0
 
-    with open(VALID_WORDS, "r") as word_file:
-        for word in word_file:
-            word = word.strip().upper()  # Read and preprocess each word from the file
-            if word[2] == target_word[2]:
-                match_score = sum(2 for letter in guess_letters if letter in word)
-                if match_score > best_match_score:
-                    best_match_hint = word
+        hint_word_file.close()
+
+        for hint_word in hint_word_file_content:
+            hint_word = hint_word.strip().upper()  # strip and uppercase
+
+            # Ensure the word is at least 3 characters long and count any two matching letters
+            if len(hint_word) > 2:
+                match_score = 0
+                for letter in guess_letters:
+                    if letter in hint_word:
+                        match_score += 1
+
+                # Check if the current word has a higher match score than the best match
+                if match_score >= 2 and match_score > best_match_score:
+                    # Update the best match hint and score
+                    best_match_hint = hint_word
                     best_match_score = match_score
 
-    # print(best_match_hint)
-    return best_match_hint
+        return best_match_hint
+
+    except FileNotFoundError:
+        print(f"File '{file_path}' not found.")
+        return None
 
 
-def get_random_congratulatory_message(CONGRATULATORY_MSG):
-    """Returns a random congratulatory message for Wordle from a file."""
+def get_random_congratulatory_message(file_path):
+    """Reads through a file and returns a random congratulatory message for Wordle from a file.
+    Args:
+        file_path (str): The path to the file containing sentences.
+    Returns:
+        str or None: A sentence from the file, or None if file reading fails.
 
-    with open(CONGRATULATORY_MSGS, "r") as congrats_msg_file:
-        congrats_msg_content = congrats_msg_file.readlines()
-        congrats_messages = [msg.strip() for msg in congrats_msg_content if msg.strip()]
-        return random.choice(congrats_messages)
+    Example:
+    >>> file_path = CONGRATULATORY_MSGS
+    >>> congrats_messages = get_random_congratulatory_message(file_path)
+    >>> assert message is not None, "File reading failed"
+    >>> print("File has been successfully read.")
+    """
+    try:
+        congrats_message_file = open(file_path, "r")
+        congrats_message_content = congrats_message_file.readlines()
+        congrats_message_file.close()
+        congrats_message_list = []
+
+        for message in congrats_message_content:
+            congrats_message = message.strip()
+            if congrats_message:
+                congrats_message_list.append(congrats_message)
+
+        random_congrats_msg = random.choice(congrats_message_list)
+        return random_congrats_msg
+
+    except FileNotFoundError:
+        print(f"File '{file_path}' not found.")
+        return None
 
 
 # FUNCTION FOR THE END OF THE GAME
@@ -216,6 +268,34 @@ def game_over(target_word):
     return game_over
 
 
+def update_statistics(target_word, guess_counter, total_guesses, total_games_played):
+    """Function to update wordle game statistics in a CSV file.
+
+    Args:
+        target_word (str): The target word.
+        guess_counter (int): Number of guesses made in the game.
+        total_guesses (int): Total number of guesses so far.
+        total_games_played (int): Total number of games played.
+
+    Returns:
+        int, int: Updated total_guesses and total_games_played.
+    """
+    try:
+        guess_statistics_file = open("wordle_statistics.csv", "a")
+        guess_statistics_file.write(f"{target_word}:{guess_counter}\n")
+        guess_statistics_file.close()
+
+        # Update the total guesses and total games played
+        total_guesses += guess_counter
+        total_games_played += 1
+
+        return total_guesses, total_games_played
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return total_guesses, total_games_played
+
+
 # MAIN GAME
 def main():
     greet()
@@ -227,10 +307,11 @@ def main():
     total_games_played = 0
     total_guesses = 0
     # total_games_played = get_total_games_played()
+
     while True:
         target_word = get_target_word(TARGET_WORDS)
         congratulation_msg = get_random_congratulatory_message(CONGRATULATORY_MSGS)
-        # print("TARGET_WORD - ", target_word)
+        print("TARGET_WORD - ", target_word)
 
         guess_num = 1
         guess_counter = 0
@@ -262,15 +343,12 @@ def main():
         else:
             game_over(target_word)
 
-        with open("wordle_statistics.csv", "a") as guess_statistics_file:
-            guess_statistics_file.write(f"{target_word}:{guess_counter}\n")
-
-            total_guesses += (
-                guess_counter  # Add the guesses made in this game to the total guesses
-            )
-            total_games_played += 1
+        total_guesses, total_games_played = update_statistics(
+            target_word, guess_counter, total_guesses, total_games_played
+        )
 
         print(f"Games played: {total_games_played}")
+
         # print(total_guesses)
 
         answer = input("\nDo you want to play again? Y/N ")
